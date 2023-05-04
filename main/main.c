@@ -1,45 +1,75 @@
+/* USER CODE BEGIN Header */
 /**
- * @file main.c
- * @author your name (you@domain.com)
- * @brief 
- * @version 0.1
- * @date 2023-04-27
- * 
- * @copyright Copyright (c) 2023
- * 
+ * @file           : main.c
+ * @brief          :
+ ******************************************************************************
+ * @attention
+ *
+ * Author:
+ * Date: 02/05/2023
+ *
+ * Description:
+ *
+ ******************************************************************************
  */
+/* USER CODE END Header */
 
+/* Includes ------------------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "main.h"
 
+/* USER CODE END Includes */
 
-/*********************************************************************************/
-/* DEFINES */
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
 #define DEBUG_FREERTOS_1
+/* USER CODE END PM */
 
-/*********************************************************************************/
-/* TYPEDEF */
-
-
-/*********************************************************************************/
-/* VARIABLES */
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN PV */
 extern EventGroupHandle_t xEventGroup__001;
+/* USER CODE END PV */
 
-/*********************************************************************************/
-/* PROTOTYPES */
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
 void vInitialize_INFO_SYS(void);
 void vInitialize_Process(void);
 void vInitialize_Init(void *pvParameters);
 void vInitialize_Hardwares(void);
-
 void vINTERNET_Task_Connect(void *pvParameters);
 void vINTERNET_Task_Disconnect(void *pvParameters);
-
-
-
 void vTIMESYS_Task_Request_Time_NTP(void *pvParameters);
 
-/*********************************************************************************/
-/* MAIN */
+extern void vEVENTGROUPSYS_InitEvent_001(void);
+
+// esp_err_t clientEvent(esp_http_client_event_t *evt);
+// void vINTERNET_Task_Request(void *pvParameters);
+extern void vINTERNET_Task_Request(void *pvParameters);
+/* USER CODE END PFP */
+
+/* Private function ----------------------------------------------------------*/
+/* USER CODE BEGIN FUNCTION */
+
+/* USER CODE END FUNCTION */
+
+/* Tasks FreeRTOS ------------------------------------------------------------*/
+/* USER CODE BEGIN TASKS FREERTOS */
+
+/* USER CODE END TASKS FREERTOS */
+
+#ifdef mainDEBUG
+/* DEBUG ---------------------------------------------------------------------*/
+/* USER CODE DEBUG */
+
+/* USER CODE END TASKS FREERTOS */
+
+#endif
+
 void app_main(void)
 {
     vInitialize_INFO_SYS();
@@ -155,6 +185,20 @@ void vInitialize_Init(void *pvParameters)
     );
 
 
+    /**
+     * @brief Inicialização de task que efetua requisições a internet
+     */
+    xTaskCreatePinnedToCore(
+        &vINTERNET_Task_Request,
+        "vINTERNET_Task_Request",
+        5*2048, 
+        NULL, 
+        2, 
+        NULL,
+        1
+    );
+
+
     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);
     vTaskDelete(NULL);
 }
@@ -194,6 +238,15 @@ void vINTERNET_Task_Connect(void *pvParameters)
     xEventGroupSetBits(
         xEventGroup__001,
         BIT_REQUEST_TIME_NTP
+    );
+
+    /**
+     * @brief Apenas para teste
+     * 
+     */
+    xEventGroupSetBits(
+        xEventGroup__001,
+        BIT_INTERNET_REQUEST
     );
     /**
      * @brief Em caso hipotetico do eventgroup n ser setado ocorre um reset do sistema 
@@ -236,9 +289,6 @@ void vINTERNET_Task_Disconnect(void *pvParameters)
 
 }
 
-
-
-
 // void vTIMESYS_Task_Request_Time_NTP(void *pvParameters)
 // {
 //     xEventGroupWaitBits(
@@ -250,4 +300,50 @@ void vINTERNET_Task_Disconnect(void *pvParameters)
 //     );
 //     printf("TESTE OOOOOOOOOOOOOOOOOOOOOOOOOOOK\n");
 //     vTaskDelete(NULL);
+// }
+
+// esp_err_t clientEvent(esp_http_client_event_t *evt)
+// {
+//     switch (evt->event_id)
+//     {
+//         case HTTP_EVENT_ON_DATA:
+//             printf("%.*s\n", evt->data_len, (char *)evt->data);
+//             break;
+//         default:
+//             break;
+//     }
+//     return ESP_OK;
+// }
+
+
+// void vINTERNET_Task_Request(void *pvParameters)
+// {
+//     vINFOSYS_Messages(INFOSYS_START_TASK, (void*)__func__);
+//     for (;;)
+//     {
+//         /**
+//          * @brief esse bit esta sendo acinado para testes apenas na função de conexao a internet
+//          * na função vINTERNET_Task_Connect no arquivo main
+//          */
+//         xEventGroupWaitBits(
+//             xEventGroup__001,
+//             BIT_INTERNET_REQUEST,
+//             pdTRUE,
+//             pdTRUE,
+//             portMAX_DELAY
+//         );
+//         {
+//             esp_http_client_config_t clientConfig = {
+//                 .url = "http://google.com",
+//                 .event_handler = clientEvent
+//             };
+
+//             esp_http_client_handle_t client = esp_http_client_init(&clientConfig);
+//             esp_http_client_perform(client);
+//             esp_http_client_cleanup(client);
+//         }
+//     }
+//     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);
+//     vTaskDelete(NULL);
+    
 // }
