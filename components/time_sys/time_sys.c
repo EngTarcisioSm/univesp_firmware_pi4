@@ -118,7 +118,7 @@ void vTIMESYS_Task_Test_Time_System(void *pvParameter)
 
         /**
          * @brief APENAS TESTE
-         * 
+         * ? NADA ALEM DISSO
          */
         xTaskCreate(
             &vTIMESYS_Task_Find_Time,
@@ -202,6 +202,7 @@ void vTIMESYS_Task_Find_Time(void *pvParameters)
          * 
          */
         printf("DIA: %s MES: %s ANO: %s HORA: %s MINUTO: %s SEGUNDO: %s\n", xTime.day, xTime.month, xTime.year, xTime.hour, xTime.minute, xTime.second);
+
     }
     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);
     vTaskDelete(NULL);
