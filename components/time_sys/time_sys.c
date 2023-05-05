@@ -116,6 +116,19 @@ void vTIMESYS_Task_Test_Time_System(void *pvParameter)
 
         ESP_LOGI(TIMER_SYS, "%s", cBuffer);
 
+        /**
+         * @brief APENAS TESTE
+         * 
+         */
+        xTaskCreate(
+            &vTIMESYS_Task_Find_Time,
+            "vTIMESYS_Task_Find_Time",
+            5*2048, 
+            NULL, 
+            2, 
+            NULL
+        );
+
         vTaskDelay( 1000 / portTICK_PERIOD_MS );
     }
 
@@ -140,4 +153,56 @@ void vOn_Got_Time(struct timeval *xTv)
     tzset();
 
     vINFOSYS_Messages(INFOSYS_TIME_SYSTEM_ATT, NULL);
+}
+
+
+void vTIMESYS_Task_Find_Time(void *pvParameters)
+{
+    vINFOSYS_Messages(INFOSYS_START_TASK, (void*)__func__);
+    {
+        TimeSys_t xTime = {0};
+        time_t xNow = 0;
+        char cBuffer[50];
+        memset(cBuffer, 0x00, sizeof(cBuffer));
+        
+        time(&xNow);
+        struct tm *xTimeInfo = localtime(&xNow);
+
+        strftime(
+            cBuffer, 
+            sizeof(cBuffer),
+            "%x",    //formato de entrega dos dados 
+            xTimeInfo
+        );
+        
+        memmove(xTime.day, &cBuffer[3], 2);
+
+        memmove(xTime.month, cBuffer, 2);        
+
+        memmove(&xTime.year[2], &cBuffer[6], 2);
+        xTime.year[0] = '2';
+        xTime.year[1] = '0';
+
+        memset(cBuffer, 0x00, sizeof(cBuffer));
+        strftime(
+            cBuffer, 
+            sizeof(cBuffer),
+            "%X",    //formato de entrega dos dados 
+            xTimeInfo
+        );
+
+        memmove(xTime.hour, cBuffer, 2);
+
+        memmove(xTime.minute, &cBuffer[3], 2);
+
+        memmove(xTime.second, &cBuffer[6], 2);
+
+        /**
+         * @brief apenas teste para verificar se todos os dados foram pegos corretamente 
+         * 
+         */
+        printf("DIA: %s MES: %s ANO: %s HORA: %s MINUTO: %s SEGUNDO: %s\n", xTime.day, xTime.month, xTime.year, xTime.hour, xTime.minute, xTime.second);
+    }
+    vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);
+    vTaskDelete(NULL);
 }

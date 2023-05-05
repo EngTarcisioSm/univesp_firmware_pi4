@@ -1,12 +1,12 @@
 /* USER CODE BEGIN Header */
 /**
- * @file           : main.h
+ * @file           : create_json.h
  * @brief          :
  ******************************************************************************
  * @attention
  *
  * Author:
- * Date: 02/05/2023
+ * Date: 04/05/2023
  *
  * Description:
  *
@@ -15,40 +15,22 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __CREATE_JSON_H
+#define __CREATE_JSON_H
 
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include <stdio.h>
-#include <stdlib.h>     
-#include <time.h>       
-#include "esp_sntp.h"   
-#include "esp_log.h"    
-#include "esp_wifi.h"           
-#include "esp_event.h"             
-#include "nvs_flash.h"             
-#include "esp_http_client.h"
-#include "string.h"
-#include "protocol_examples_common.h"
-#include "esp_log.h"
+#include <string.h>
+#include "cJSON.h"
+#include "INFOSYS.h"
 
+#include <stdio.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "freertos/semphr.h"
-
-#include "test.h"
-#include "infochip.h"
-#include "INFOSYS.h"
-#include "eventgroup_sys.h"
-#include "time_sys.h"
-#include "internet.h"
-#include "../components/create_json/include/create_json.h"
-// #include "create_json.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,7 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define mainDEBUG
+//#define create_jsonDEBUG
 
 /* USER CODE END PD */
 
@@ -74,10 +56,10 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+void vCREATEJSON_Create(void *pvParameters);
 /* USER CODE END PFP */
 
 
-#endif /* __MAIN_H */
+#endif /* __CREATE_JSON_H */
 
 /*******************************END OF FILE************************************/

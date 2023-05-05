@@ -198,6 +198,17 @@ void vInitialize_Init(void *pvParameters)
         1
     );
 
+    /**
+     * @brief Task de criação de JSON
+     */
+    xTaskCreate(
+        &vCREATEJSON_Create,
+        "vCREATEJSON_Create",
+        2*2048, 
+        NULL, 
+        2, 
+        NULL
+    );
 
     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);
     vTaskDelete(NULL);

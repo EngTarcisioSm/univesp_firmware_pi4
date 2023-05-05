@@ -36,7 +36,14 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct TIME_SYS {
+    char year[5];
+    char month[3];
+    char day[3];
+    char hour[3];
+    char minute[3];
+    char second[3];
+} TimeSys_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -60,6 +67,7 @@ extern EventGroupHandle_t xEventGroup__001;
 /* USER CODE BEGIN PFP */
 void vTIMESYS_Task_Request_Time_NTP(void *pvParameters);
 void vTIMESYS_Task_Test_Time_System(void *pvParameter);
+void vTIMESYS_Task_Find_Time(void *pvParameters);
 /* USER CODE END PFP */
 
 
