@@ -89,9 +89,11 @@ void vINFOSYS_Messages(uint8_t ucType, void *pvMessage)
         case INFOSYS_TIME_SYSTEM_ATT:
             ESP_LOGI(INFOSYS_TAG, "TIME SYSTEM UPDATE");
             break; 
-        case 8:
+        case INFOSYS_ERROR_QUEUE_SUCCESS:
+            ESP_LOGI(INFOSYS_TAG, "Queue %s created", (char*)pvMessage);
             break; 
-        case 9:
+        case INFOSYS_ERROR_QUEUE_FAIL:
+            ESP_LOGI(INFOSYS_TAG, "Queue %s fail", (char*)pvMessage);
             break;   
         case 10:
             break;  

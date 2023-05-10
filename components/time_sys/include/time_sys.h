@@ -61,10 +61,13 @@ typedef struct TIME_SYS {
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 extern EventGroupHandle_t xEventGroup__001;
+
+QueueHandle_t xQueueTransfer_time;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
+void vTIMESYS_CreateQueueTransfer();
 void vTIMESYS_Task_Request_Time_NTP(void *pvParameters);
 void vTIMESYS_Task_Test_Time_System(void *pvParameter);
 void vTIMESYS_Task_Find_Time(void *pvParameters);

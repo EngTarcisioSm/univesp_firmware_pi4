@@ -42,7 +42,20 @@ void vOn_Got_Time(struct timeval *xTv);
 
 /* Private function ----------------------------------------------------------*/
 /* USER CODE BEGIN FUNCTION */
+void vTIMESYS_CreateQueueTransfer()
+{
+    xQueueTransfer_time = xQueueCreate( 1, sizeof(TimeSys_t) );
 
+    if( xQueueTransfer_time == NULL )
+    {
+        /**
+         * @brief queue não foi criada
+         */
+        vINFOSYS_Messages(INFOSYS_ERROR_QUEUE_FAIL, (void*)("xQueueTransfer_time"));
+        esp_restart();
+    }
+    vINFOSYS_Messages(INFOSYS_ERROR_QUEUE_SUCCESS, (void*)("xQueueTransfer_time"));
+}
 /* USER CODE END FUNCTION */
 
 /* Tasks FreeRTOS ------------------------------------------------------------*/
@@ -116,18 +129,6 @@ void vTIMESYS_Task_Test_Time_System(void *pvParameter)
 
         ESP_LOGI(TIMER_SYS, "%s", cBuffer);
 
-        /**
-         * @brief APENAS TESTE
-         * ? NADA ALEM DISSO
-         */
-        xTaskCreate(
-            &vTIMESYS_Task_Find_Time,
-            "vTIMESYS_Task_Find_Time",
-            5*2048, 
-            NULL, 
-            2, 
-            NULL
-        );
 
         vTaskDelay( 1000 / portTICK_PERIOD_MS );
     }
@@ -201,7 +202,13 @@ void vTIMESYS_Task_Find_Time(void *pvParameters)
          * @brief apenas teste para verificar se todos os dados foram pegos corretamente 
          * 
          */
-        printf("DIA: %s MES: %s ANO: %s HORA: %s MINUTO: %s SEGUNDO: %s\n", xTime.day, xTime.month, xTime.year, xTime.hour, xTime.minute, xTime.second);
+        //printf("DIA: %s MES: %s ANO: %s HORA: %s MINUTO: %s SEGUNDO: %s\n", xTime.day, xTime.month, xTime.year, xTime.hour, xTime.minute, xTime.second);
+
+        xQueueSend(
+            xQueueTransfer_time,
+            &xTime,
+            portMAX_DELAY
+        );
 
     }
     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);

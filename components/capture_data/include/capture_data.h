@@ -1,12 +1,12 @@
 /* USER CODE BEGIN Header */
 /**
- * @file           : INFOSYS.h
+ * @file           : capture_data.h
  * @brief          :
  ******************************************************************************
  * @attention
  *
  * Author:
- * Date: 02/05/2023
+ * Date: 10/05/2023
  *
  * Description:
  *
@@ -15,52 +15,64 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __INFOSYS_H
-#define __INFOSYS_H
+#ifndef __CAPTURE_DATA_H
+#define __CAPTURE_DATA_H
 
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include<stdlib.h>
+
 #include <stdio.h>
-#include "esp_log.h"
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/event_groups.h"
+#include "freertos/semphr.h"
+#include "freertos/queue.h"
+
+#include <time.h>       
+#include "esp_sntp.h"   
+
+#include "INFOSYS.h"
+#include "eventgroup_sys.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct DATAROUND {
+    double dTensao;
+    double dCorrente;
+    double dTemperatura;
+} DataRound_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define INFOSYSDEBUG
-
+//#define capture_dataDEBUG
+#define CAPTUREDATA_DELAY_ANOSTRAS          1000
+#define CAPTUREDATA_N_ANOSTRAS              10
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define INFOSYS_TAG             "INFOSYS"
 
-#define INFOSYS_START_TASK                  1
-#define INFOSYS_STOP_TASK                   2
-#define INFOSYS_INITIALIZE_HARDWARE         3
-#define INFOSYS_START_EVENTGROUP            4
-#define INFOSYS_ERROR_EVENTGROUP            5
-#define INFOSYS_ERROR_EVENTGROUP_BIT        6
-#define INFOSYS_TIME_SYSTEM_ATT             7
-#define INFOSYS_ERROR_QUEUE_SUCCESS         8
-#define INFOSYS_ERROR_QUEUE_FAIL            9
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+QueueHandle_t xQueueTransfer;
+QueueHandle_t xQueueTransfer_FROM_JSON;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-void vINFOSYS_Messages(uint8_t ucType, void *pvMessage);
+void vCAPTUREDATA_CreateQueueTransfer();
+void vCAPTUREDATA_CreateQueueTransfer_FROM_JSON();
+void vCAPTUREDATA_ReceiveData(void *pvParameters);
+void vCAPTUREDATA_FilterMed(void *pvParamerts);
 /* USER CODE END PFP */
 
 
-#endif /* __INFOSYS_H */
+#endif /* __CAPTURE_DATA_H */
 
 /*******************************END OF FILE************************************/

@@ -40,6 +40,7 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "freertos/semphr.h"
+#include "freertos/queue.h"
 
 #include "test.h"
 #include "infochip.h"
@@ -48,6 +49,7 @@
 #include "time_sys.h"
 #include "internet.h"
 #include "../components/create_json/include/create_json.h"
+#include "capture_data.h"
 // #include "create_json.h"
 /* USER CODE END Includes */
 
@@ -69,7 +71,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern EventGroupHandle_t xEventGroup__001;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

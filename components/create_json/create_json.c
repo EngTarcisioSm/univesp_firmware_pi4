@@ -50,33 +50,86 @@
 
 void vCREATEJSON_Create(void *pvParameters)
 {
+    DataRound_t xDataReceive;
+    TimeSys_t xTimeReceive = {0};
+    char cTensao[10], cCorrente[10], cTemperatura[10];
+
     vINFOSYS_Messages(INFOSYS_START_TASK, (void*)__func__);
+
     for(;;)
     {
         char *pcJson_Str;
         cJSON *pxRoot = cJSON_CreateObject(); // cria um objeto JSON vazio
 
-        // adiciona as chaves e valores no objeto JSON
-        cJSON_AddStringToObject(pxRoot, "ano", "2023");
-        cJSON_AddStringToObject(pxRoot,"mes", "4");
-        cJSON_AddStringToObject(pxRoot, "dia", "5");
-        cJSON_AddStringToObject(pxRoot, "hora", "03");
-        cJSON_AddStringToObject(pxRoot, "minuto", "02");
-        cJSON_AddStringToObject(pxRoot, "segundo", "30");
-        cJSON_AddStringToObject(pxRoot, "milissegundo", "00");
-        cJSON_AddStringToObject(pxRoot, "corrente", "20.1");
-        cJSON_AddStringToObject(pxRoot, "tensao", "110");
-        cJSON_AddStringToObject(pxRoot, "temperatura", "23");
+        /**
+         * @brief Aguarda a queue de dados para envio 
+         * 
+         */
+        xQueueReceive(
+            xQueueTransfer_FROM_JSON,
+            &(xDataReceive),
+            portMAX_DELAY
+        );
+        {
+            memset(cTensao, 0x00, sizeof(cTensao));
+            memset(cCorrente, 0x00, sizeof(cCorrente));
+            memset(cTemperatura, 0x00, sizeof(cTemperatura));
 
-        pcJson_Str = cJSON_Print(pxRoot);
+            sprintf(
+                cTensao,
+                "%.2f",
+                xDataReceive.dTensao
+            );
+            sprintf(
+                cCorrente,
+                "%.2f",
+                xDataReceive.dCorrente
+            );
+            sprintf(
+                cTemperatura,
+                "%.2f",
+                xDataReceive.dTemperatura
+            );
 
-        printf("%s\n", pcJson_Str); // imprime a string JSON na saída padrão
-        printf("size %d\n",sizeof(pcJson_Str));
+            /**
+             * @brief Criada a task que organiza os valores de tempo
+             * 
+             */
+            xTaskCreate(
+                &vTIMESYS_Task_Find_Time,
+                "vTIMESYS_Task_Find_Time",
+                5*2048, 
+                NULL, 
+                2, 
+                NULL
+            );
 
-        cJSON_Delete(pxRoot); // libera a memória do objeto JSON
-        free(pcJson_Str); // libera a memória da string JSON
+            xQueueReceive(
+                xQueueTransfer_time,
+                &(xTimeReceive),
+                portMAX_DELAY
+            );
 
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+            // adiciona as chaves e valores no objeto JSON
+            cJSON_AddStringToObject(pxRoot, "ano", xTimeReceive.year);
+            cJSON_AddStringToObject(pxRoot,"mes", xTimeReceive.month);
+            cJSON_AddStringToObject(pxRoot, "dia", xTimeReceive.day);
+            cJSON_AddStringToObject(pxRoot, "hora", xTimeReceive.hour);
+            cJSON_AddStringToObject(pxRoot, "minuto", xTimeReceive.minute);
+            cJSON_AddStringToObject(pxRoot, "segundo", xTimeReceive.second);
+            cJSON_AddStringToObject(pxRoot, "milissegundo", "00");
+            cJSON_AddStringToObject(pxRoot, "corrente", cCorrente);
+            cJSON_AddStringToObject(pxRoot, "tensao", cTensao);
+            cJSON_AddStringToObject(pxRoot, "temperatura", cTemperatura);
+
+            pcJson_Str = cJSON_Print(pxRoot);
+
+            printf("%s\n", pcJson_Str); // imprime a string JSON na saída padrão
+            printf("size %d\n",sizeof(pcJson_Str));
+
+            cJSON_Delete(pxRoot); // libera a memória do objeto JSON
+            free(pcJson_Str); // libera a memória da string JSON
+        }
     }
     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);
     vTaskDelete(NULL);

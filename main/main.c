@@ -32,7 +32,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-extern EventGroupHandle_t xEventGroup__001;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,6 +77,13 @@ void app_main(void)
     vInitialize_Hardwares();
 
     vEVENTGROUPSYS_InitEvent_001();
+
+    /**
+     * @brief Criação de Queues
+     */
+    vCAPTUREDATA_CreateQueueTransfer();
+    vCAPTUREDATA_CreateQueueTransfer_FROM_JSON();
+    vTIMESYS_CreateQueueTransfer();
 
     vInitialize_Process();
 
@@ -209,6 +216,33 @@ void vInitialize_Init(void *pvParameters)
         2, 
         NULL
     );
+
+    /**
+     * @brief APENAS TESTE
+     * ? NADA ALEM DISSO
+     */
+    xTaskCreate(
+        &vCAPTUREDATA_ReceiveData,
+        "vCAPTUREDATA_ReceiveData",
+        1*2048, 
+        NULL, 
+        2, 
+        NULL
+    );
+
+    /**
+     * @brief Criação da função que cuida da filtragem por media do sinal 
+     * 
+     */
+    xTaskCreate(
+        &vCAPTUREDATA_FilterMed,
+        "vCAPTUREDATA_FilterMed",
+        2*2048, 
+        NULL, 
+        3, 
+        NULL
+    );
+
 
     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);
     vTaskDelete(NULL);

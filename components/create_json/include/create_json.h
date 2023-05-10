@@ -24,6 +24,8 @@
 #include <string.h>
 #include "cJSON.h"
 #include "INFOSYS.h"
+#include "capture_data.h"
+#include "time_sys.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -31,6 +33,7 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "freertos/semphr.h"
+#include "freertos/queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +54,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern QueueHandle_t xQueueTransfer_FROM_JSON;
+extern QueueHandle_t xQueueTransfer_time;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
