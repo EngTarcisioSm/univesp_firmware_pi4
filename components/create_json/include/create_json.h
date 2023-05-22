@@ -56,11 +56,14 @@
 /* USER CODE BEGIN PV */
 extern QueueHandle_t xQueueTransfer_FROM_JSON;
 extern QueueHandle_t xQueueTransfer_time;
+
+QueueHandle_t xQueueJSON;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 void vCREATEJSON_Create(void *pvParameters);
+void vCREATEJSON_CreateQueueSENDJSON();
 /* USER CODE END PFP */
 
 

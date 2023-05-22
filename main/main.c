@@ -27,7 +27,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define DEBUG_FREERTOS_1
+// #define DEBUG_FREERTOS_1
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -84,6 +84,7 @@ void app_main(void)
     vCAPTUREDATA_CreateQueueTransfer();
     vCAPTUREDATA_CreateQueueTransfer_FROM_JSON();
     vTIMESYS_CreateQueueTransfer();
+    vCREATEJSON_CreateQueueSENDJSON();
 
     vInitialize_Process();
 
@@ -153,6 +154,7 @@ void vInitialize_Init(void *pvParameters)
         2, 
         NULL
     );
+#endif
     xTaskCreate(
         &vTIMESYS_Task_Test_Time_System, 
         "Task_Test_Time_System", 
@@ -163,7 +165,6 @@ void vInitialize_Init(void *pvParameters)
     );
 
     
-#endif
 
     /**
      * @brief Inicialização de conexão a internet no segundo core
@@ -201,6 +202,21 @@ void vInitialize_Init(void *pvParameters)
         5*2048, 
         NULL, 
         2, 
+        NULL,
+        1
+    );
+
+    /**
+     * @brief Task de envio de json para o servidor
+     * 
+     * @param pvParameters 
+     */
+    xTaskCreatePinnedToCore(
+        &vINTERNET_Task_Request2,
+        "vINTERNET_Task_Request2",
+        5*2048, 
+        NULL, 
+        3, 
         NULL,
         1
     );

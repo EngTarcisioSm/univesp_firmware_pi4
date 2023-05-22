@@ -42,7 +42,20 @@
 
 /* Private function ----------------------------------------------------------*/
 /* USER CODE BEGIN FUNCTION */
+void vCREATEJSON_CreateQueueSENDJSON()
+{
+    xQueueJSON = xQueueCreate( 1, sizeof(char *) );
 
+    if( xQueueJSON == NULL )
+    {
+        /**
+         * @brief queue não foi criada
+         */
+        vINFOSYS_Messages(INFOSYS_ERROR_QUEUE_FAIL, (void*)("xQueueJSON"));
+        esp_restart();
+    }
+    vINFOSYS_Messages(INFOSYS_ERROR_QUEUE_SUCCESS, (void*)("xQueueJSON"));
+}
 /* USER CODE END FUNCTION */
 
 /* Tasks FreeRTOS ------------------------------------------------------------*/
@@ -127,8 +140,31 @@ void vCREATEJSON_Create(void *pvParameters)
             printf("%s\n", pcJson_Str); // imprime a string JSON na saída padrão
             printf("size %d\n",sizeof(pcJson_Str));
 
-            cJSON_Delete(pxRoot); // libera a memória do objeto JSON
-            free(pcJson_Str); // libera a memória da string JSON
+            /**
+             * @brief Passar o ponteiro do json para uma queue que é encaminhada para ser enviada para o servidor
+             * 
+             */
+            xQueueSend(
+                xQueueJSON,
+                &pcJson_Str,
+                portMAX_DELAY
+            );
+
+            /**
+             * @brief Esperar por um eventgroup que deleta o ponteiro para não haver transbordamento de memoria
+             * 
+             */
+            xEventGroupWaitBits(
+                xEventGroup__001,
+                BIT_INTERNET_SEND_API_FINISH,
+                pdTRUE,
+                pdTRUE,
+                portMAX_DELAY
+            );
+            {
+                cJSON_Delete(pxRoot); // libera a memória do objeto JSON
+                free(pcJson_Str); // libera a memória da string JSON
+            }
         }
     }
     vINFOSYS_Messages(INFOSYS_STOP_TASK, (void*)__func__);

@@ -42,9 +42,10 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define BIT_REQUEST_TIME_NTP        1<<0
-#define BIT_ATT_TIME_SYSTEM_OK      1<<1
-#define BIT_INTERNET_REQUEST        1<<2
+#define BIT_REQUEST_TIME_NTP            1<<0
+#define BIT_ATT_TIME_SYSTEM_OK          1<<1
+#define BIT_INTERNET_REQUEST            1<<2
+#define BIT_INTERNET_SEND_API_FINISH    1<<3
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
